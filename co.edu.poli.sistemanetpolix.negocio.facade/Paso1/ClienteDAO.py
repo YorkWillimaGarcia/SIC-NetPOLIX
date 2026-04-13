@@ -69,9 +69,9 @@ def crearCliente():
         print(c.rowcount, "Registro insertado exitosamente.")
 
         print("\n¿Desea agregar otro cliente?\n1. Sí \n2. No")
-        var = input()
+        var = int(input())
 
-        if var == "2":
+        if var != 1:
             break
     unconnection(conn)
 
@@ -118,13 +118,13 @@ def actualizarCliente():
                 print(c.rowcount, "Registro actualizado exitosamente.")
 
             print("\n¿Desea actualizar otro dato del cliente?\n1. Sí \n2. No")
-            var = input()
-            if var == "2":
+            var = int(input())
+            if var != 1:
                 break
 
         print("\n¿Desea actualizar otro cliente?\n1. Sí \n2. No")
-        var = input()
-        if var == "2":
+        var = int(input())
+        if var != 1:
             break
         
     unconnection(conn)
@@ -150,8 +150,7 @@ def eliminarCliente():
         print("\n¿Desea eliminar otro cliente?\n1. Sí \n2. No")
         var = input()
 
-        if var == "2":
+        if var != "1":
             break
     
     unconnection(conn)
-    

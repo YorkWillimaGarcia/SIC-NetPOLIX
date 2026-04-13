@@ -70,8 +70,9 @@ def crearVideo():
     conn = getConnection()
     if not conn: return
 
+    print("\nCREAR VIDEO")
+
     while True:
-        print("\nCREAR VIDEO")
         isan_video = input("\nDigite el ISAN del video: ")
         titulo = input("Digite el título: ")
         año = input("Digite el año de lanzamiento: ")
@@ -88,7 +89,7 @@ def crearVideo():
         print("\n¿Desea agregar otro video?\n1. Sí \n2. No")
         var = input()
 
-        if var == "2":
+        if var != "1":
             break
     unconnection(conn)
 
@@ -133,12 +134,12 @@ def actualizarVideo():
             
             print("\n¿Desea actualizar otro dato del video?\n1. Sí \n2. No")
             var = input()
-            if var == "2":
+            if var != "1":
                 break
             
-         print("\n¿Desea actualizar otro cliente?\n1. Sí \n2. No")
+         print("\n¿Desea actualizar otro video?\n1. Sí \n2. No")
          var = input()
-         if var == "2":
+         if var != "1":
             break
  
     unconnection(conn)
@@ -162,7 +163,7 @@ def eliminarVideo():
         print("\n¿Desea eliminar otro cliente?\n1. Sí \n2. No")
         var = input()
 
-        if var == "2":
+        if var != "1":
             break
 
     unconnection(conn)
