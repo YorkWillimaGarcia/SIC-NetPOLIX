@@ -33,10 +33,13 @@ def findAll():
     
     unconnection(conn)
 
-def buscarVideoPorTitulo(titulo):
+def buscarVideoPorTitulo():
     conn = getConnection()
     if not conn: return
-    
+
+    print("\nBusca el video por título: ")
+    titulo = input("Ingrese el título del video: ")
+
     c = conn.cursor()
     query = 'SELECT * FROM "Video" WHERE titulo ILIKE %s'
     val = (f"%{titulo}%",)
@@ -47,10 +50,13 @@ def buscarVideoPorTitulo(titulo):
     
     unconnection(conn)
 
-def buscarVideoPorIsan(isan_video):
+def buscarVideoPorIsan():
     conn = getConnection()
     if not conn: return
     
+    print("\nBusca el video por ISAN")
+    isan_video = input("Ingrese el isan del video: ")
+
     c = conn.cursor()
     query = 'SELECT * FROM "Video" WHERE isan_video = %s'
     val = (isan_video,)
@@ -60,45 +66,104 @@ def buscarVideoPorIsan(isan_video):
     
     unconnection(conn)
 
-def crearVideo(isan_video, titulo, año, duracion_minutos):
+def crearVideo():
     conn = getConnection()
     if not conn: return
-    
-    c = conn.cursor()
-    query = 'INSERT INTO "Video" (isan_video, titulo, año, duracion_minutos) VALUES (%s, %s, %s, %s)'
-    val = (isan_video, titulo, año, duracion_minutos)
-    
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro insertado.")
+
+    while True:
+        print("\nCREAR VIDEO")
+        isan_video = input("\nDigite el ISAN del video: ")
+        titulo = input("Digite el título: ")
+        año = input("Digite el año de lanzamiento: ")
+        duracion_minutos = input("Digite la duracion en minutos: ")
+
+        c = conn.cursor()
+        query = 'INSERT INTO "Video" (isan_video, titulo, año, duracion_minutos) VALUES (%s, %s, %s, %s)'
+        val = (isan_video, titulo, año, duracion_minutos)
+        
+        c.execute(query, val)
+        conn.commit()
+        print(c.rowcount, "registro insertado.")
+
+        print("\n¿Desea agregar otro video?\n1. Sí \n2. No")
+        var = input()
+
+        if var == "2":
+            break
     unconnection(conn)
 
-def editarVideo(isan_video, titulo, año, duracion_minutos):
+def actualizarVideo():
     conn = getConnection()
     if not conn: return
-    
-    c = conn.cursor()
-    query = 'UPDATE "Video" SET titulo = %s, año = %s, duracion_minutos = %s WHERE isan_video = %s'
-    val = (isan_video, titulo, año, duracion_minutos)
-    
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro actualizado.")
+    print("\nACTUALIZAR VIDEO")
+
+    while True:
+         isan_video = input("\nIngrese el ISAN del video a actualizar: ")
+         
+         while True:
+            print("¿Qué infromación desea actualizar? \nOpción 1: Título \nOpción 2: Año \nOpción 3: Duración")
+            upd = input()
+            
+            if upd == "1":
+                titulo = input("Ingrese el nuevo título: ")
+                c = conn.cursor()
+                query = 'UPDATE "Video" SET titulo = %s WHERE isan_video = %s'
+                val = (titulo, isan_video)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+
+            if upd == "2":
+                año = input("Ingrese el nuevo año: ")
+                c = conn.cursor()
+                query = 'UPDATE "Video" SET año = %s WHERE isan_video = %s'
+                val = (año, isan_video)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+
+            if upd == "3":
+                duracion_minutos = input("Ingrese la nueva duración: ")
+                c = conn.cursor()
+                query = 'UPDATE "Video" SET duracion_minutos = %s WHERE isan_video = %s'
+                val = (duracion_minutos, isan_video)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+            
+            print("\n¿Desea actualizar otro dato del video?\n1. Sí \n2. No")
+            var = input()
+            if var == "2":
+                break
+            
+         print("\n¿Desea actualizar otro cliente?\n1. Sí \n2. No")
+         var = input()
+         if var == "2":
+            break
+ 
     unconnection(conn)
 
-def eliminarVideo(isan_video):
+def eliminarVideo():
     conn = getConnection()
     if not conn: return
-    
-    c = conn.cursor()
-    query = 'DELETE FROM "Video" WHERE isan_video = %s'
-    val = (isan_video,)
-    
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro eliminado.")
+
+    print("\nELIMINAR VIDEO")
+
+    while True:
+        isan_video = input("Digite el ISAN del video a eliminar: ")
+        c = conn.cursor()
+        query = 'DELETE FROM "Video" WHERE isan_video = %s'
+        val = (isan_video,)
+        c.execute(query, val)
+        conn.commit()
+
+        print(c.rowcount, "registro eliminado.")
+
+        print("\n¿Desea eliminar otro cliente?\n1. Sí \n2. No")
+        var = input()
+
+        if var == "2":
+            break
+
     unconnection(conn)
 
-if __name__ == "__main__":
-    print("Probando consulta de todos los videos:")
-    findAll()   

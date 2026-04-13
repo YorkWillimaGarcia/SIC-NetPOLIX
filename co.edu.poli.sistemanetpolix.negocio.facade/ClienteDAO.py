@@ -24,6 +24,7 @@ def findAll():
     conn = getConnection()
     if not conn: return
     
+    print("\nLOS REGISTROS EN LA BASE DE DATOS SON:")
     c = conn.cursor()
     c.execute('SELECT * FROM "Cliente"')
     
@@ -33,24 +34,13 @@ def findAll():
     
     unconnection(conn)
 
-def buscarPersonaPorNombre(nombre):
+def buscarClientePorId():
     conn = getConnection()
     if not conn: return
     
-    c = conn.cursor()
-    query = 'SELECT * FROM "Cliente" WHERE nombre ILIKE %s'
-    val = (f"%{nombre}%",)
-    
-    c.execute(query, val)
-    for row in c.fetchall():
-        print(row)
-    
-    unconnection(conn)
+    print("\nBUSCAR CLIENTE POR ID")
+    id_cliente = input("\nDigite el ID del cliente: ")
 
-def buscarPersonaPorId(id_cliente):
-    conn = getConnection()
-    if not conn: return
-    
     c = conn.cursor()
     query = 'SELECT * FROM "Cliente" WHERE id_cliente = %s'
     val = (id_cliente,)
@@ -60,45 +50,108 @@ def buscarPersonaPorId(id_cliente):
     
     unconnection(conn)
 
-def crearPersona(id_cliente, cedula, nombre, apellido):
+def crearCliente():
+    conn = getConnection()
+    if not conn: return
+    print("\nCREAR CLIENTE")
+
+    while True:
+        id_cliente = input("\nDigite el ID del cliente: ")
+        cedula = input("Digite la cédula: ")
+        nombre = input("Digite el nombre: ")
+        apellido = input("Digite el apellido: ")
+        c = conn.cursor()
+        query = 'INSERT INTO "Cliente" (id_cliente, cedula, nombre, apellido) VALUES (%s, %s, %s, %s)'
+        val = (id_cliente, cedula, nombre, apellido)
+    
+        c.execute(query, val)
+        conn.commit()
+        print(c.rowcount, "Registro insertado exitosamente.")
+
+        print("\n¿Desea agregar otro cliente?\n1. Sí \n2. No")
+        var = input()
+
+        if var == "2":
+            break
+    unconnection(conn)
+
+def actualizarCliente():
     conn = getConnection()
     if not conn: return
     
-    c = conn.cursor()
-    query = 'INSERT INTO "Cliente" (id_cliente, cedula, nombre, apellido) VALUES (%s, %s, %s, %s)'
-    val = (id_cliente, cedula, nombre, apellido)
+    print("\nACTUALIZAR CLIENTE")
     
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro insertado.")
-    unconnection(conn)
+    while True:
+        id_cliente = input("\nIngrese el Id del cliente a actualizar: ")
 
-def editarPersona(cedula, nombre, apellido, id_cliente):
+        while True: 
+            print("¿Qué infromación desea actualizar? \nOpción 1: Cédula \nOpción 2: Nombre \nOpción 3: Apellido")
+            upd = input()
+
+            if upd == "1":
+                cedula = input("Ingrese la nueva cédula: ")
+                c = conn.cursor()
+                query = 'UPDATE "Cliente" SET cedula = %s WHERE id_cliente = %s'
+                val = (cedula, id_cliente)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+
+        
+            if upd == "2":
+                nombre = input("Ingrese el nuevo nombre: ")
+                c = conn.cursor()
+                query = 'UPDATE "Cliente" SET nombre = %s WHERE id_cliente = %s'
+                val = (nombre, id_cliente)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+    
+
+            if upd == "3":
+                apellido = input("Ingrese el nuevo apellido: ")
+                c = conn.cursor()
+                query = 'UPDATE "Cliente" SET apellido = %s WHERE id_cliente = %s'
+                val = (apellido, id_cliente)
+                c.execute(query, val)
+                conn.commit()
+                print(c.rowcount, "Registro actualizado exitosamente.")
+
+            print("\n¿Desea actualizar otro dato del cliente?\n1. Sí \n2. No")
+            var = input()
+            if var == "2":
+                break
+
+        print("\n¿Desea actualizar otro cliente?\n1. Sí \n2. No")
+        var = input()
+        if var == "2":
+            break
+        
+    unconnection(conn)
+      
+    
+def eliminarCliente():
     conn = getConnection()
     if not conn: return
     
-    c = conn.cursor()
-    query = 'UPDATE "Cliente" SET cedula = %s, nombre = %s, apellido = %s WHERE id_cliente = %s'
-    val = (cedula, nombre, apellido, id_cliente)
+    print("\nELIMINAR CLIENTE")
     
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro actualizado.")
-    unconnection(conn)
+    while True: 
+        id_cliente = input("Digite el ID del cliente a eliminar: ")
 
-def eliminarPersona(id_cliente):
-    conn = getConnection()
-    if not conn: return
-    
-    c = conn.cursor()
-    query = 'DELETE FROM "Cliente" WHERE id_cliente = %s'
-    val = (id_cliente,)
-    
-    c.execute(query, val)
-    conn.commit()
-    print(c.rowcount, "registro eliminado.")
-    unconnection(conn)
+        c = conn.cursor()
+        query = 'DELETE FROM "Cliente" WHERE id_cliente = %s'
+        val = (id_cliente,)
+        c.execute(query, val)
+        conn.commit()
+        
+        print(c.rowcount, "registro eliminado.")
 
-if __name__ == "__main__":
-    print("Probando consulta de todos los clientes:")
-    findAll()   
+        print("\n¿Desea eliminar otro cliente?\n1. Sí \n2. No")
+        var = input()
+
+        if var == "2":
+            break
+    
+    unconnection(conn)
+    
