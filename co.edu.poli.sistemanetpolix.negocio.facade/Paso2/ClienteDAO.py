@@ -1,151 +1,128 @@
 # ============================================================
-# PersonaDAO.py
-# Capa de acceso a datos (DAO) para la entidad Persona
-# Encapsula todas las operaciones CRUD sobre la tabla 'persona'
+# ClienteDAO.py
+# Capa de acceso a datos (DAO) para la entidad Cliente
 # ============================================================
 
 from models import Cliente, SessionLocal
 from sqlalchemy.orm import Session
 
 
-# ------------------------------------------------------------
-# Clase: PersonaDAO
-# Provee métodos para crear, consultar, actualizar y eliminar
-# registros de Persona en la base de datos
-#
-# Parámetros del constructor:
-#   db_session (Session) -- Sesión activa de SQLAlchemy
-#
-# Ejemplo de uso:
-#   session = SessionLocal()
-#   dao = PersonaDAO(session)
-# ------------------------------------------------------------
 class ClienteDAO:
 
-    # Recibe la sesión de base de datos por inyección de dependencias
     def __init__(self, db_session: Session):
         self.db = db_session
 
     # --------------------------------------------------------
     # Método: crear
-    # Inserta una nueva persona en la base de datos
-    #
-    # Parámetros:
-    #   idpersona     (int/str) -- Identificador único
-    #   nombre        (str)     -- Nombre de la persona
-    #   apellido      (str)     -- Apellido de la persona
-    #   email         (str)     -- Correo electrónico
-    #   num_documento (str)     -- Número de documento
-    #
-    # Retorna:
-    #   Persona -- El objeto recién creado y persistido
-    #
-    # Ejemplo:
-    #   p = dao.crear(1, "Ana", "García", "ana@mail.com", "123456")
+    # Inserta un nuevo cliente en la base de datos
     # --------------------------------------------------------
     def crear(self):
-        print("\n=== Crear persona ===")
-        nuevo_cliente = Cliente(
-            id_cliente =input("\nDigite el ID del cliente: "),
-            cedula = input("Digite la cédula: "),
-            nombre = input("Digite el nombre: "),
-            apellido = input("Digite el apellido: ")
-        )
-        self.db.add(nuevo_cliente)
-        self.db.commit()
-        self.db.refresh(nuevo_cliente)  # sincroniza el objeto con los datos de la BD
+        print("\n=== CREAR CLIENTE ===")
+        while True:
+            nuevo_cliente = Cliente(
+                id_cliente = int(input("\nDigite el ID del cliente: ")),
+                cedula     = input("Digite la cédula: "),
+                nombre     = input("Digite el nombre: "),
+                apellido   = input("Digite el apellido: ")
+            )
+            self.db.add(nuevo_cliente)
+            self.db.commit()
+            self.db.refresh(nuevo_cliente)
+            print("Registro insertado exitosamente.")
+
+            var = input("\n¿Desea agregar otro cliente?\n1. Sí \n2. No\n")
+            if var != "1":
+                break
         return nuevo_cliente
 
     # --------------------------------------------------------
-    # Método: obtener_por_id
-    # Busca una persona por su clave primaria
-    #
-    # Parámetros:
-    #   idpersona (int/str) -- ID a buscar
-    #
-    # Retorna:
-    #   Persona | None -- El objeto encontrado o None si no existe
-    #
-    # Ejemplo:
-    #   p = dao.obtener_por_id(1)
-    # --------------------------------------------------------
-    """def obtener_por_id(self, idpersona):
-        return self.db.query(Persona).filter(Persona.idpersona == idpersona).first()
-
-    # --------------------------------------------------------
-    # Método: obtener_por_nombre
-    # Busca la primera persona que coincida con el nombre dado
-    #
-    # Parámetros:
-    #   nombre (str) -- Nombre exacto a buscar
-    #
-    # Retorna:
-    #   Persona | None -- El objeto encontrado o None si no existe
-    #
-    # Ejemplo:
-    #   p = dao.obtener_por_nombre("Ana")
-    # --------------------------------------------------------
-    def obtener_por_nombre(self, nombre):
-        return self.db.query(Persona).filter(Persona.nombre == nombre).first()
-
-    # --------------------------------------------------------
     # Método: obtener_todos
-    # Recupera todos los registros de la tabla persona
-    #
-    # Retorna:
-    #   list[Persona] -- Lista de objetos Persona (puede ser vacía)
-    #
-    # Ejemplo:
-    #   personas = dao.obtener_todos()
-    #   for p in personas:
-    #       print(p.nombre)
+    # Recupera todos los registros de la tabla Cliente
     # --------------------------------------------------------
     def obtener_todos(self):
-        return self.db.query(Persona).all()
+        print("\n=== TODOS LOS CLIENTES ===")
+        clientes = self.db.query(Cliente).all()
+        if not clientes:
+            print("No hay registros.")
+        else:
+            for c in clientes:
+                print(f"ID: {c.id_cliente} | Cédula: {c.cedula} | Nombre: {c.nombre} | Apellido: {c.apellido}")
+        return clientes
+
+    # --------------------------------------------------------
+    # Método: obtener_por_id
+    # Busca un cliente por su clave primaria
+    # --------------------------------------------------------
+    def obtener_por_id(self):
+        print("\n=== BUSCAR CLIENTE POR ID ===")
+        while True:
+            id_cliente  = input("\nDigite el ID del cliente: ")
+            cur_cliente = self.db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
+
+            if cur_cliente is None:
+                print("Cliente no encontrado.")
+            else:
+                print(f"ID: {cur_cliente.id_cliente} | Cédula: {cur_cliente.cedula} | Nombre: {cur_cliente.nombre} | Apellido: {cur_cliente.apellido}")
+
+            var = input("\n¿Desea buscar otro cliente?\n1. Sí \n2. No\n")
+            if var != "1":
+                break
 
     # --------------------------------------------------------
     # Método: actualizar
-    # Modifica los datos de una persona existente
-    #
-    # Parámetros:
-    #   idpersona             (int/str) -- ID de la persona a modificar
-    #   nuevo_nombre          (str)     -- Nuevo nombre
-    #   nuevo_apellido        (str)     -- Nuevo apellido
-    #   nuevo_email           (str)     -- Nuevo correo electrónico
-    #   nuevo_num_documento   (str)     -- Nuevo número de documento
-    #
-    # Retorna:
-    #   Persona | None -- El objeto actualizado, o None si no se encontró
-    #
-    # Ejemplo:
-    #   p = dao.actualizar(1, "Ana", "López", "ana2@mail.com", "654321")
+    # Modifica los datos de un cliente existente
     # --------------------------------------------------------
-    def actualizar(self, idpersona, nuevo_nombre, nuevo_apellido, nuevo_email, nuevo_num_documento):
-        persona = self.obtener_por_id(idpersona)
-        if persona:
-            persona.nombre        = nuevo_nombre
-            persona.apellido      = nuevo_apellido
-            persona.email         = nuevo_email
-            persona.num_documento = nuevo_num_documento
-            self.db.commit()
-        return persona
+    def actualizar(self):
+        print("\n=== ACTUALIZAR CLIENTE ===")
+        while True:
+            id_cliente  = input("\nIngrese el ID del cliente a actualizar: ")
+            cur_cliente = self.db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
+
+            if cur_cliente is None:
+                print("Cliente no encontrado.")
+            else:
+                while True:
+                    print("\n¿Qué información desea actualizar?\n1. Cédula\n2. Nombre\n3. Apellido")
+                    upd = input()
+
+                    if upd == "1":
+                        cur_cliente.cedula = input("Ingrese la nueva cédula: ")
+                    elif upd == "2":
+                        cur_cliente.nombre = input("Ingrese el nuevo nombre: ")
+                    elif upd == "3":
+                        cur_cliente.apellido = input("Ingrese el nuevo apellido: ")
+                    else:
+                        print("Opción no válida.")
+
+                    self.db.commit()
+                    self.db.refresh(cur_cliente)
+                    print("Registro actualizado exitosamente.")
+
+                    var = input("\n¿Desea actualizar otro dato del cliente?\n1. Sí \n2. No\n")
+                    if var != "1":
+                        break
+
+            var = input("\n¿Desea actualizar otro cliente?\n1. Sí \n2. No\n")
+            if var != "1":
+                break
 
     # --------------------------------------------------------
     # Método: eliminar
-    # Elimina una persona de la base de datos por su ID
-    #
-    # Parámetros:
-    #   idpersona (int/str) -- ID de la persona a eliminar
-    #
-    # Retorna:
-    #   bool -- True si se eliminó (o si no existía)
-    #
-    # Ejemplo:
-    #   resultado = dao.eliminar(1)
+    # Elimina un cliente de la base de datos por su ID
     # --------------------------------------------------------
-    def eliminar(self, idpersona):
-        persona = self.obtener_por_id(idpersona)
-        if persona:
-            self.db.delete(persona)
-            self.db.commit()
-        return True"""
+    def eliminar(self):
+        print("\n=== ELIMINAR CLIENTE ===")
+        while True:
+            id_cliente  = input("Digite el ID del cliente a eliminar: ")
+            cur_cliente = self.db.query(Cliente).filter(Cliente.id_cliente == id_cliente).first()
+
+            if cur_cliente is None:
+                print("Cliente no encontrado.")
+            else:
+                self.db.delete(cur_cliente)
+                self.db.commit()
+                print("Registro eliminado exitosamente.")
+
+            var = input("\n¿Desea eliminar otro cliente?\n1. Sí \n2. No\n")
+            if var != "1":
+                break

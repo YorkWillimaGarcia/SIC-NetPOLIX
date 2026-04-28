@@ -75,7 +75,7 @@ class Cliente(Base):
     nombre = Column(String, nullable=True)
     apellido = Column(String, nullable=True)
 
-
+ 
 
 
 # Crea las tablas en la BD si no existen aún
